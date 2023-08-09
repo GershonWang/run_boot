@@ -244,7 +244,11 @@ void Widget::on_btn_stop_clicked() {
  * @brief Widget::on_btn_about_clicked
  */
 void Widget::on_btn_about_clicked() {
-    QMessageBox::aboutQt(this,"关于QT");
+    QString msg = "版本：1.0.1<br>";
+          msg += "作者：GershonWang<br>";
+          msg += "QT版本：5.15.7<br>";
+          msg += "项目地址: <a href='https://github.com/GershonWang/run_boot'>https://github.com/GershonWang/run_boot</a><br>";
+    QMessageBox::about(this,"关于",msg);
 }
 /**
  * 监听关闭事件
