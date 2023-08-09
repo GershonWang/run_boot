@@ -18,7 +18,7 @@ Widget::Widget(QWidget *parent) : QWidget(parent), ui(new Ui::Widget){
     if (!directory.exists()) {
         QDateTime currentDateTime = QDateTime::currentDateTime();
         QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-        ui->text_log->append(tr("「%1」目录不存在。。。").arg(formattedDateTime));
+        ui->text_log->append(tr("「%1」当前无可执行服务。。。").arg(formattedDateTime));
         return;
     }
     QStringList fileList = directory.entryList(QDir::Files);
@@ -67,7 +67,7 @@ void Widget::on_btn_upload_clicked() {
             ui->text_log->append(tr("「%1」文件已存在。。。").arg(formattedDateTime));
         }
     } else {
-        ui->text_log->append(tr("「%1」取消选择").arg(formattedDateTime));
+        ui->text_log->append(tr("「%1」取消选择.。。").arg(formattedDateTime));
     }
 }
 /**
@@ -84,10 +84,10 @@ void Widget::on_btn_remove_clicked() {
             selectedItems << data.toString();
         }
     }
-    QString selectServerName = selectedItems.at(0);
     QDateTime currentDateTime = QDateTime::currentDateTime();
     QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-    if(!selectedItems.isEmpty() && selectServerName != NULL) {
+    if(!selectedItems.isEmpty() && selectedItems.at(0) != NULL) {
+        QString selectServerName = selectedItems.at(0);
         QString filePath = dstFileName + "/" + selectServerName;
         QFile file(filePath);
         if (file.remove()) {
@@ -117,14 +117,20 @@ void Widget::on_btn_start_clicked() {
             selectedItems << data.toString();
         }
     }
-    QString selectServerName = selectedItems.at(0);
     QDateTime currentDateTime = QDateTime::currentDateTime();
     QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-    if(!selectedItems.isEmpty() && selectServerName != NULL) {
+    if(!selectedItems.isEmpty() && selectedItems.at(0) != NULL) {
+        QString selectServerName = selectedItems.at(0);
         QString jarPath = dstFileName + "/" + selectServerName;
-        QString command = "java"; // 要执行的命令，可以根据你的需要修改
+        QString type = selectServerName.split(".").last();
+        QString command; // 要执行的命令，可以根据你的需要修改
         QStringList arguments; // 命令的参数，如果有的话
-        arguments << "-jar" << jarPath;
+        if(type == "java") {
+            command = "java";
+            arguments << "-jar" << jarPath;
+        } else if(type == "py") {
+            command = "python";
+        }
         QProcess *process = new QProcess;
         process->setProcessChannelMode(QProcess::MergedChannels); // 合并标准输出和标准错误输出
         QObject::connect(process, &QProcess::readyReadStandardOutput, [=]() {
@@ -166,10 +172,11 @@ void Widget::on_btn_restart_clicked() {
             selectedItems << data.toString();
         }
     }
-    QString selectServerName = selectedItems.at(0);
+
     QDateTime currentDateTime = QDateTime::currentDateTime();
     QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-    if(!selectedItems.isEmpty() && selectServerName != NULL) {
+    if(!selectedItems.isEmpty() && selectedItems.at(0) != NULL) {
+            QString selectServerName = selectedItems.at(0);
         QProcess *process = qProcessMap[selectServerName];
         if (process && process->state() == QProcess::Running) {
             process->terminate();
@@ -196,7 +203,7 @@ void Widget::on_btn_restart_clicked() {
             QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
             // 判断是否启动
             if (!process->waitForStarted()) {
-                ui->text_log->append(tr("「%1」服务 %2 启动失败").arg(formattedDateTime).arg(selectServerName));
+                ui->text_log->append(tr("「%1」服务 %2 启动失败。。。").arg(formattedDateTime).arg(selectServerName));
                 return;
             }
             qProcessMap.insert(selectServerName,process);
@@ -222,10 +229,10 @@ void Widget::on_btn_stop_clicked() {
             selectedItems << data.toString();
         }
     }
-    QString selectServerName = selectedItems.at(0);
     QDateTime currentDateTime = QDateTime::currentDateTime();
     QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
     if(!selectedItems.isEmpty() && selectedItems.at(0) != NULL) {
+        QString selectServerName = selectedItems.at(0);
         QProcess *process = qProcessMap[selectServerName];
         if (process && process->state() == QProcess::Running) {
             process->terminate();
