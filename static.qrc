@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/imgs">
+        <file>static/Restart.ico</file>
+        <file>static/Restart_16.png</file>
+        <file>static/Restart_32.png</file>
+        <file>static/Restart_64.png</file>
+        <file>static/Restart_128.png</file>
+    </qresource>
+</RCC>
