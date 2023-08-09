@@ -125,7 +125,7 @@ void Widget::on_btn_start_clicked() {
         QString type = selectServerName.split(".").last();
         QString command; // 要执行的命令，可以根据你的需要修改
         QStringList arguments; // 命令的参数，如果有的话
-        if(type == "java") {
+        if(type == "jar") {
             command = "java";
             arguments << "-jar" << jarPath;
         } else if(type == "py") {
@@ -265,15 +265,21 @@ void Widget::on_btn_about_clicked() {
 void Widget::closeEvent(QCloseEvent *event){
     if (qProcessMap.size() > 0) {
         QString servers;
+        int i = 0;
         foreach(const QString key, qProcessMap.keys()){
-            servers += " <" + key + "> ";
+            QProcess *process = qProcessMap[key];
+            if (process && process->state() == QProcess::Running) {
+                servers += " <" + key + "> ";
+                i++;
+            }
         }
-        QDateTime currentDateTime = QDateTime::currentDateTime();
-        QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
-        ui->text_log->append(tr("「%1」请停止服务 %2 后，再关闭程序。。。").arg(formattedDateTime).arg(servers));
-        event->ignore(); // 阻止关闭
-        return;
-    } else {
-        event->accept(); // 允许关闭
+        if(i > 0){
+            QDateTime currentDateTime = QDateTime::currentDateTime();
+            QString formattedDateTime = currentDateTime.toString("yyyy-MM-dd hh:mm:ss");
+            ui->text_log->append(tr("「%1」请停止服务 %2 后，再关闭程序。。。").arg(formattedDateTime).arg(servers));
+            event->ignore(); // 阻止关闭
+            return;
+        }
     }
+    event->accept(); // 允许关闭
 }
