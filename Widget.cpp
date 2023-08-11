@@ -67,7 +67,7 @@ void Widget::on_btn_upload_clicked() {
             ui->text_log->append(tr("「%1」文件已存在。。。").arg(formattedDateTime));
         }
     } else {
-        ui->text_log->append(tr("「%1」取消选择.。。").arg(formattedDateTime));
+        ui->text_log->append(tr("「%1」取消选择。。。").arg(formattedDateTime));
     }
 }
 /**
